@@ -17,6 +17,10 @@ public:
        current_acting_force = amount_of_force;         
     }
 
+    void add_vert_force(float amount_of_force) {
+        vertical_velocity += amount_of_force;
+    }
+
     void update(double time_delta) {
         // move the object each frame.
         // this means you have to update the velocity of it, and get a new position
@@ -125,6 +129,14 @@ int WinMain(){
     log_y.setFillColor(sf::Color::Black);
     log_y.setPosition(sf::Vector2f(5.f, 40.f));
 
+    sf::Text log_hor_movement(font, "x mvmnt: " + std::to_string(physics_ball.current_acting_force), 20);
+    log_hor_movement.setFillColor(sf::Color::Black);
+    log_hor_movement.setPosition(sf::Vector2f(5.f, 60.f));
+
+    sf::Text log_vert_movement(font, "y mvmnt: " + std::to_string(physics_ball.vertical_velocity), 20);
+    log_vert_movement.setFillColor(sf::Color::Black);
+    log_vert_movement.setPosition(sf::Vector2f(5.f, 80.f));
+
     sf::CircleShape ball(50.f);
     ball.setFillColor(sf::Color::Blue);
     ball.setPosition(physics_ball.get_vec2());
@@ -133,6 +145,15 @@ int WinMain(){
     barrier_obj.setFillColor(sf::Color::Red);
     barrier_obj.setPosition({500.f, 500.f});
 
+    sf::RectangleShape barrier_obj1({100.f, 40.f});
+    barrier_obj1.setFillColor(sf::Color::Red);
+    barrier_obj1.setPosition({300.f, 200.f});
+
+    sf::RectangleShape barrier_obj2({100.f, 40.f});
+    barrier_obj2.setFillColor(sf::Color::Red);
+    barrier_obj2.setPosition({600.f, 250.f});
+
+    
     auto timestep = chrono::high_resolution_clock::now(); 
 
 
@@ -145,14 +166,29 @@ int WinMain(){
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)){
                 physics_ball.add_force(5.f);
             }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)){
+                physics_ball.add_force(-5.f);
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)){
+                physics_ball.add_vert_force(5.f);
+            } else {
+                physics_ball.add_vert_force(0.f);
+            }    
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)){
+                physics_ball.add_vert_force(-5.f);
+            } else {
+                physics_ball.add_vert_force(0.f);
+            }   
         }
-
+    
         auto timenow = chrono::high_resolution_clock::now();
         chrono::duration<double> elapsed_time = timenow - timestep;
         timestep = timenow;
         double time_delta = elapsed_time.count(); // time since last frame
         physics_ball.check_edge_collision(time_delta, window.getSize().x, window.getSize().y);
         physics_ball.check_object_collision(time_delta,barrier_obj.getPosition().x, barrier_obj.getPosition().y, barrier_obj.getSize().x, barrier_obj.getSize().y);
+        physics_ball.check_object_collision(time_delta,barrier_obj1.getPosition().x, barrier_obj1.getPosition().y, barrier_obj1.getSize().x, barrier_obj1.getSize().y);
+        physics_ball.check_object_collision(time_delta,barrier_obj2.getPosition().x, barrier_obj2.getPosition().y, barrier_obj2.getSize().x, barrier_obj2.getSize().y);
 
 
         physics_ball.update(time_delta);
@@ -160,6 +196,8 @@ int WinMain(){
 
         log_x.setString("x: " + std::to_string(physics_ball.position_x));
         log_y.setString("y: " + std::to_string(physics_ball.position_y));
+        log_hor_movement.setString("x mvmnt: " + std::to_string(physics_ball.current_acting_force));
+        log_vert_movement.setString("y mvmnt: " + std::to_string(physics_ball.vertical_velocity));
 
         window.clear(sf::Color::White); // set bg colour to white
 
@@ -167,10 +205,14 @@ int WinMain(){
         window.draw(log_x);
         window.draw(log_y);
         window.draw(barrier_obj);
+        window.draw(barrier_obj1);
+        window.draw(barrier_obj2);
+        window.draw(log_hor_movement);
+        window.draw(log_vert_movement);
 
         window.display();
-    }
 
+    }
 
     return 0;
 }
