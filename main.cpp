@@ -64,17 +64,37 @@ public:
     }
 
     void check_object_collision(double time_delta, float rectangle_x, float rectangle_y, float rectangle_width, float rectangle_height){
+        float ball_right = position_x + 100.f;
+        float ball_bottom = position_y + 100.f;
 
-        if (position_x + 100.f > rectangle_x){
-            position_x = rectangle_x - 100.f;
-            velocity *= -restitution_coeff;
+        float rect_right = rectangle_x + rectangle_width;
+        float rect_bottom = rectangle_y + rectangle_height;
+
+        bool collisionX = ball_right > rectangle_x && position_x < rect_right;
+        bool collisionY = ball_bottom > rectangle_y && position_y < rect_bottom;
+
+        if (collisionX && collisionY) {
+            float overlap_right = rect_right - position_x;
+            float overlap_left = ball_right - rectangle_x;
+            float overlap_bottom = rect_bottom - position_y;
+            float overlap_top = ball_bottom - rectangle_y;
+
+            if (min(overlap_right, overlap_left) < min(overlap_bottom, overlap_top)) {
+                if (overlap_right < overlap_left) {
+                    position_x = rect_right;
+                } else {
+                    position_x = rectangle_x - 100.f;
+                }
+                velocity *= -restitution_coeff;
+            } else {
+                if (overlap_bottom < overlap_top) {
+                    position_y = rect_bottom;
+                } else {
+                    position_y = rectangle_y - 100.f;
+                }
+                vertical_velocity *= -restitution_coeff;
+            }
         }
-
-        if (position_y + 100.f > rectangle_y){
-            position_y = rectangle_y - 100.f;
-            vertical_velocity *= -restitution_coeff;
-        }
-
     }
 
     float current_acting_force = 0;
