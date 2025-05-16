@@ -8,7 +8,7 @@ A quick project to learn about basic movement, physics and collsion theory.
 
 Using the up arrow, down arrow, left arrow and right arrow you can control the force being applied to the ball. When there is no force acting on the ball in the vertical field, it will use up its vertical momentum and return to falling with gravity.
 
-[gif link to be added]
+https://imgur.com/k8xj4uF
 
 
 
